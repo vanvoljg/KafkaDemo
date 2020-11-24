@@ -19,6 +19,7 @@ public class Producer {
                 case "strings":
                     stringMessages(args);
                     return;
+                default:
             }
         }
 
