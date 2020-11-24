@@ -40,14 +40,7 @@ public class Consumer {
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
-                    String message =
-                        String.format(
-                            "offset = %d, key = %s, value = %s, partition = %s",
-                            record.offset(),
-                            record.key(),
-                            record.value(),
-                            record.partition()
-                        );
+                    String message = createFormattedMessage(record);
                     System.out.println(message);
                 }
             }
@@ -71,14 +64,7 @@ public class Consumer {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
                     buffer.add(record);
-                    String message =
-                            String.format(
-                                    "offset = %d, key = %s, value = %s, partition = %s",
-                                    record.offset(),
-                                    record.key(),
-                                    record.value(),
-                                    record.partition()
-                            );
+                    String message = createFormattedMessage(record);
                     System.out.println(message);
                 }
                 if (buffer.size() >= minBatchSize) {
@@ -106,14 +92,7 @@ public class Consumer {
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> record : records) {
-                    String message =
-                            String.format(
-                                    "offset = %d, key = %s, value = %s, partition = %s",
-                                    record.offset(),
-                                    record.key(),
-                                    record.value(),
-                                    record.partition()
-                            );
+                    String message = createFormattedMessage(record);
                     System.out.println(message);
                 }
             }
@@ -145,16 +124,14 @@ public class Consumer {
         return new KafkaConsumer<>(props);
     }
 
-    private static KafkaConsumer<String, String> createPartitionAssignmentConsumer() {
-        Properties props = new Properties();
-        props.setProperty("bootstrap.servers", "localhost:9092, localhost:9093, localhost:9094");
-        props.setProperty("group.id", "third-group");
-        props.setProperty("enable.auto.commit", "true");
-        props.setProperty("auto.commit.interval.ms", "1000");
-        props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-
-        return new KafkaConsumer<>(props);
+    private static String createFormattedMessage(ConsumerRecord<String, String> record) {
+        return String.format(
+                "offset = %d, key = %s, value = %s, partition = %s",
+                record.offset(),
+                record.key(),
+                record.value(),
+                record.partition()
+        );
     }
 
     private static String consumerUsage() {
