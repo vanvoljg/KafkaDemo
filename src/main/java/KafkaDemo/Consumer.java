@@ -1,6 +1,7 @@
 package KafkaDemo;
 
 import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.TopicPartition;
 
 import java.io.FileWriter;
 import java.time.Duration;
@@ -22,6 +23,9 @@ public class Consumer {
                 case "manual-commit":
                     manualCommitConsumer(topics);
                     break;
+                case "partition-assignment":
+                    partitionAssignmentConsumer(topics);
+                    break;
                 default:
             }
         } else {
@@ -30,7 +34,7 @@ public class Consumer {
     }
 
     private static void autoCommitConsumer(String[] topics) {
-        try (KafkaConsumer<String, String> consumer = createAutoCommitStringStringConsumer()) {
+        try (KafkaConsumer<String, String> consumer = createAutoCommitConsumer()) {
             consumer.subscribe(Arrays.asList(topics));
 
             while (true) {
@@ -58,8 +62,8 @@ public class Consumer {
         List<ConsumerRecord<String, String>> buffer = new ArrayList<>();
 
         try (
-            KafkaConsumer<String, String> consumer = createManualCommitStringStringConsumer();
-            FileWriter fileWriter = new FileWriter("./numbers.txt", true)
+                KafkaConsumer<String, String> consumer = createManualCommitConsumer();
+                FileWriter fileWriter = new FileWriter("./numbers.txt", true)
         ) {
             consumer.subscribe(Arrays.asList(topics));
 
@@ -89,7 +93,37 @@ public class Consumer {
         }
     }
 
-    private static KafkaConsumer<String, String> createAutoCommitStringStringConsumer() {
+    private static void partitionAssignmentConsumer(String[] topics) {
+        try (KafkaConsumer<String, String> consumer = createAutoCommitConsumer()) {
+
+            TopicPartition[] partitions = {
+                new TopicPartition(topics[0], 0),
+                new TopicPartition(topics[0], 1),
+            };
+
+            consumer.assign(Arrays.asList(partitions));
+
+            while (true) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+                for (ConsumerRecord<String, String> record : records) {
+                    String message =
+                            String.format(
+                                    "offset = %d, key = %s, value = %s, partition = %s",
+                                    record.offset(),
+                                    record.key(),
+                                    record.value(),
+                                    record.partition()
+                            );
+                    System.out.println(message);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static KafkaConsumer<String, String> createAutoCommitConsumer() {
         Properties props = new Properties();
         props.setProperty("bootstrap.servers", "localhost:9092, localhost:9093, localhost:9094");
         props.setProperty("group.id", "first-group");
@@ -101,7 +135,7 @@ public class Consumer {
         return new KafkaConsumer<>(props);
     }
 
-    private static KafkaConsumer<String, String> createManualCommitStringStringConsumer() {
+    private static KafkaConsumer<String, String> createManualCommitConsumer() {
         Properties props = new Properties();
         props.setProperty("bootstrap.servers", "localhost:9092, localhost:9093, localhost:9094");
         props.setProperty("group.id", "second-group");
@@ -111,8 +145,20 @@ public class Consumer {
         return new KafkaConsumer<>(props);
     }
 
+    private static KafkaConsumer<String, String> createPartitionAssignmentConsumer() {
+        Properties props = new Properties();
+        props.setProperty("bootstrap.servers", "localhost:9092, localhost:9093, localhost:9094");
+        props.setProperty("group.id", "third-group");
+        props.setProperty("enable.auto.commit", "true");
+        props.setProperty("auto.commit.interval.ms", "1000");
+        props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        return new KafkaConsumer<>(props);
+    }
+
     private static String consumerUsage() {
-        return "First argument to \"consumer\" must be the type of consumer. (\"auto-commit\" or \"manual-commit\")\n" +
+        return "First argument to \"consumer\" must be the type of consumer. (\"auto-commit\", \"manual-commit\", or \"partition-assignment\")\n" +
                 "Second argument to \"consumer\" must be the channel to subscribe to. (\"numbers\" or \"strings\")";
     }
 }
