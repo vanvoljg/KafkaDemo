@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "consumer": "node consumer.js",
-    "producer": "node producer.js"
+    "consumer": "node index.js consumer",
+    "producer": "node index.js producer"
   }
 }
