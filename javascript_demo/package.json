@@ -1,0 +1,22 @@
+{
+  "name": "kafka-js",
+  "version": "0.1.0",
+  "description": "JavaScript demonstration of Kafka consumers and producers",
+  "main": "index.js",
+  "author": "Jesse Van Volkinburg",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^7.14.0",
+    "prettier": "^2.2.0",
+    "prettier-eslint": "^12.0.0"
+  },
+  "dependencies": {
+    "chance": "^1.1.7",
+    "kafkajs": "^1.15.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "consumer": "node consumer.js",
+    "producer": "node producer.js"
+  }
+}
