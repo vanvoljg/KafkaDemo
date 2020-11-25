@@ -1,6 +1,11 @@
 'use strict';
 
-const { kafka } = require('./kafka.js');
+const { Kafka } = require('kafkajs');
+
+const kafka = new Kafka({
+  clientId: 'my-consumer',
+  brokers: ['localhost:9092', 'localhost:9093', 'localhost:9094'],
+});
 
 const consumer = kafka.consumer({
   groupId: 'first-group',
@@ -18,9 +23,11 @@ const runConsumer = async (args) => {
 
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
-        console.log(
-          `Topic: ${topic}, message.value: ${message.value}, message.offset: ${message.offset}, Partition: ${partition}`
-        );
+        console.log({
+          partition: partition,
+          offset: message.offset,
+          value: message.value.toString(),
+        });
       },
     });
   } else {

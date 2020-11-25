@@ -56,7 +56,7 @@ public class Consumer {
 
         try (
                 KafkaConsumer<String, String> consumer = createManualCommitConsumer();
-                FileWriter fileWriter = new FileWriter("./numbers.txt", true)
+                FileWriter fileWriter = new FileWriter("./consumer_output.txt", true)
         ) {
             consumer.subscribe(Arrays.asList(topics));
 
