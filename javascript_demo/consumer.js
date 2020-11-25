@@ -23,7 +23,7 @@ const runConsumer = async (args) => {
 
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
-        console.log({
+        console.info({
           partition: partition,
           offset: message.offset,
           value: message.value.toString(),
@@ -31,11 +31,8 @@ const runConsumer = async (args) => {
       },
     });
   } else {
-    console.log('First argument to consumer must be the topic');
+    console.error('First argument to consumer must be the topic');
   }
 };
 
-module.exports = { runConsumer };
-
-const args = process.argv.slice(2);
-runConsumer(args).catch(console.error);
+module.exports = runConsumer;

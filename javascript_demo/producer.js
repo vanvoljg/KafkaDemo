@@ -18,7 +18,7 @@ let topic;
 const animalMessage = async () => {
   const animal = chance.animal();
   const message = createMessage(animal);
-  console.log(animal);
+  console.info(animal);
   await sendMessage(producer, topic, message);
 };
 
@@ -44,7 +44,6 @@ const createMessage = (value, key) => ({
 });
 
 const runProducer = async (args) => {
-  console.log({args});
   if (args.length >= 2) {
     count = parseInt(args[1]);
   }
@@ -62,7 +61,4 @@ const runProducer = async (args) => {
   }
 };
 
-module.exports = { runProducer };
-
-const args = process.argv.slice(2);
-runProducer(args).catch(console.error);
+module.exports = runProducer;
