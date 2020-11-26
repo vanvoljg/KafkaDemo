@@ -125,13 +125,19 @@ Pull in all dependencies using Mix:
 
 To run a consumer which will consume messages from the `cities` topic:
 
-- `elixir_demo $ mix consumer`
+- `elixir_demo $ iex -S mix`
+
+<!-- To change the topic, edit the `config/config.exs` file and replace or add the -->
+<!-- desired topic in the `topics` list of the `consumer` configuration section. -->
 
 ### Producer
 
-To run a producer which will produce 100 random cities to the `cities` topic:
+To run a producer which will produce 100 messages and send to the `cities` topic:
 
-- `elixir_demo $ mix producer`
+- `elixir_demo $ iex -S mix producer`
+
+<!-- To change the topic, edit the `config/config.exs` file and replace or add the -->
+<!-- desired topic in the `topics` list of the `producer` configuration section. -->
 
 ## License
 
